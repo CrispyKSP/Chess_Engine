@@ -1,4 +1,4 @@
-import Properties_of_the_Pieces
+from Properties_of_the_Pieces import *
 
 
 Chess_Race_Map =["Black","Black","Black","Black","Black","Black","Black","Black",

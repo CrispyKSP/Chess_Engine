@@ -3,38 +3,62 @@ import Properties_of_the_Pieces
 
 def Row_Column(Board_Index):
 
-    Row = Board_Index // 10
-    Column = Board_Index % 10
+    Row = Board_Index // 8
+    Column = Board_Index % 8
 
     return Row,Column
 
+def Anti_Row_Column(Moves_in_Row_Column, Name):
 
-def Rook(Board_Index):
+    Moves_in_one_Number = []
+
+    for i in Moves_in_Row_Column:
+        if type(i) == int:
+
+            print(i)
+            print(Name)
+            continue
+
+        Num = i[0]*8 + i[1]
+
+        Moves_in_one_Number.append(Num)
+
+    return Moves_in_one_Number
+
+def Rook(Board_Index,Name):
 
     Row,Column = Row_Column(Board_Index)
 
-    Moves = []
+    Moves_In_Same_Row = []
+    Moves_In_Same_Column = []
 
-    for i in range(,7):
+    for i in range(7):
 
-        Moves.append([i,Column])
-        Moves.append([Row,i])
+        Moves_In_Same_Column.append([i,Column])
+        Moves_In_Same_Row.append([Row,i])
 
-    return Moves
 
-def Bishop(Board_Index):
+    Moves_Horizontal = Move_Legality_Rook(Anti_Row_Column(Moves_In_Same_Row,'Rook'),Name,Board_Index)
+
+    Moves_Vertical = Move_Legality_Rook(Anti_Row_Column(Moves_In_Same_Column,'Rook'),Name)
+
+    return Moves_Vertical + Moves_Horizontal
+
+
+def Bishop(Board_Index,Name):
 
     Row,Column = Row_Column(Board_Index)
 
-    Moves = []
+    Left_Up_Right_Down_Moves = []
+    Right_up_Left_Down_Moves = []
 
     Goes_in_Negative_Row = Goes_in_Positive_Row = Row
     Goes_in_Negative_Column = Goes_in_Positive_Column = Column
 
     while Goes_in_Negative_Column >= 0 and Goes_in_Negative_Row >= 0:
 
-        Moves.append([Goes_in_Negative_Row,Goes_in_Negative_Column])
-        Goes_in_Negative_Row -= 1
+        Right_Up_Left_Down_Moves.append([Goes_in_Negative_Row,Goes_in_Negative_Column])
+        Goes_in_Negative_Row -= 1 
         Goes_in_Negative_Column -= 1
 
     Goes_in_Negative_Row = Goes_in_Positive_Row = Row
@@ -47,7 +71,7 @@ def Bishop(Board_Index):
             Goes_in_Positive_Column += 1
             continue
 
-        Moves.append([Goes_in_Negative_Row,Goes_in_Positive_Column])
+        Left_Up_Right_Down_Moves.append([Goes_in_Negative_Row,Goes_in_Positive_Column])
         Goes_in_Negative_Row -= 1
         Goes_in_Positive_Column += 1
 
@@ -61,7 +85,7 @@ def Bishop(Board_Index):
             Goes_in_Positive_Column += 1
             continue
 
-        Moves.append([Goes_in_Positive_Row,Goes_in_Positive_Column])
+        Right_up_Left_Down_Moves.append([Goes_in_Positive_Row,Goes_in_Positive_Column])
         Goes_in_Positive_Row += 1
         Goes_in_Positive_Column += 1
 
@@ -75,17 +99,21 @@ def Bishop(Board_Index):
             Goes_in_Negative_Column -= 1
             continue
 
-        Moves.append([Goes_in_Positive_Row,Goes_in_Negative_Column])
+        Left_Up_Right_Down_Moves.append([Goes_in_Positive_Row,Goes_in_Negative_Column])
         Goes_in_Positive_Row += 1
         Goes_in_Negative_Column -= 1
 
+    Left_Up_Right_Down_Moves = Move_Legality_Bishop(Anti_Row_Column(Left_Up_Right_Down_Moves,"Bishop"),Name,Board_Index)
+    Right_up_Left_Down_Moves = Move_Legality_Bishop(Anti_Row_Column(Right_up_Left_Down_Moves,"Bishop"),Name,Board_Index)
+
+
     return Moves
 
-def Knight(Board_Index): 
+def Knight(Board_Index,Name): 
 
     Row,Column = Row_Column(Board_Index)
 
-    Move = [] 
+    Moves = [] 
 
     Up_Right = [Row - 2 ,Column + 1]
     Up_Left = [Row - 2 ,Column - 1]
@@ -104,9 +132,11 @@ def Knight(Board_Index):
     for A_Move in All_moves:
 
         if (A_Move[0] < 8 and A_Move[0] >= 0) and (A_Move[1] < 8 and A_Move[1] >= 0 ):
-            Move.append(A_move)
+            Moves.append(A_Move)
 
-    return Move
+    Moves = Anti_Row_Column(Moves,"Knight")
+
+    return Moves
 
     '''
 
@@ -168,11 +198,11 @@ def Knight(Board_Index):
 
     '''
 
-def King(Board_Index):
+def King(Board_Index,Name):
 
     Row,Column = Row_Column(Board_Index)
 
-    Move = []
+    Moves = []
 
     Up = [ Row - 1, Column]
     Down = [ Row + 1, Column ]
@@ -188,52 +218,28 @@ def King(Board_Index):
     for A_Move in All_moves:
 
         if (A_Move[0] < 8 and A_Move[0] >= 0) and (A_Move[1] < 8 and A_Move[1] >= 0 ):
-            Move.append(A_move)
+            Moves.append(A_Move)
+
+    Moves = Anti_Row_Column(Moves,"King")
+
+    return Moves
+
+def Queen(Board_Index,Name):
+
+    Moves = []
+
+    Rook_Moves = Rook(Board_Index,Name)
+    Bishop_Moves = Bishop(Board_Index,Name)
+
+    Moves = Rook_Moves + Bishop_Moves
+
+    return Moves
+
+def Pawn(Board_Index,Name):
 
 
-    return Move
 
-
-def Queen(Board_Index):
-
-    Move = []
-
-    Rook_Moves = Rook(Board_Index)
-    Bishop_Moves = Bishop(Board_Index)
-
-    Move = Rook_Moves + Bishop_Moves
-
-    return Move
-
-
-def Pawn(Board_Index):
-
-    Row,Column = Row_Column(Board_Index)
-
-    Move = [Row+1,Column]
-
-    return Move
-
-
-def Check_Legality(Moves):
-
-    One_Number_Move = []
-    Can_Be_Placed_At = []
-
-    for A_Move in Moves:
-
-        One_Number_Move.append(A_Move[0]*10 + A_Move[1] )
-
-
-    for i in One_Number_Move:
-
-        Position  = One_List_Map[i]
-
-        if Position == 'EMPTY':
-
-            Can_Be_Placed_At.append(i)
-
-        elif Position
+    return [Board_Index+1]
 
 
 
